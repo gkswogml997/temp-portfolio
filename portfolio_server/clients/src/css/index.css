@@ -1,0 +1,21 @@
+/* RESETS */
+body {
+  background-color: #FFF6BF; 
+  overflow-x:hidden; 
+  overflow-y:auto;
+}
+
+header {
+  background-color: #C3F8FF;
+  width: fit-content();
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+footer {
+  background-color: #FFEBAD;
+  width: fit-content();
+  height: fit-content();
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>PoPal 로그인</title>
+    <!-- bootstrap extension-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet"
+          href="../bootstrap/css/bootstrap.min.css" />
+    <!-- bootstrap extension-->
+
+    <style>
+        body {
+            background-image: url('png/background.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
+    
+
+</head>
+<body class="text-center" style="background-color: transparent">
+
+    <main class="form-signin w-100 m-auto">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-4">
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <form action='/PoPalLoginProcess' method='post'>
+                        <h1 class="h3 mb-3 fw-normal">PoPal</h1>
+
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="닉네임" name="nickname">
+                            <br />
+                        </div>
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="floatingPassword" placeholder="식별번호" name="password">
+                            <br />
+                        </div>
+
+                        <button class="w-100 btn btn-lg btn-primary" type="submit">로그인</button>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

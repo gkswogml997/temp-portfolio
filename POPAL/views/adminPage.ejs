@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>관리자페이지</title>
+    <!-- bootstrap extension-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet"
+          href="../bootstrap/css/bootstrap.min.css" />
+    <!-- bootstrap extension-->
+    <style>
+        body {
+            background-image: url('../png/background.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="row">
+        <!-- 벤 -->
+        <div class="col-lg-5">
+            <div class="card">
+                <div class="card-header" style="height: 70px">
+                    <h3><b>관리자 콘솔</b></h3>
+                </div>
+                <div class="card-body" style="height: 500px">
+                    <p>플레이어 이용정지</p>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="ban_name" placeholder="정지 대상 닉네임" autocomplete="off" />
+                        <input type="text" class="form-control" id="ban_reason" placeholder="정지 사유" autocomplete="off" />
+                        <div class="input-group-append">
+                            <button id="ban_button" class="btn btn-primary" placeholder="message">정지</button>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="pardon_name" placeholder="정지 해제 대상 닉네임" autocomplete="off" />
+                        <div class="input-group-append">
+                            <button id="pardon_button" class="btn btn-primary" placeholder="message">정지 해제</button>
+                        </div>
+                    </div>
+                    <br/>
+                    <p>특수 메세지 발송</p>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="every_notice" placeholder="전체공지" autocomplete="off" />
+                        <div class="input-group-append">
+                            <button id="every_notice_button" class="btn btn-primary" placeholder="message">입력</button>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="private_message_target" placeholder="귓속말 대상" autocomplete="off" />
+                        <input type="text" class="form-control" id="private_message_contain" placeholder="귓속말 내용" autocomplete="off" />
+                        <div class="input-group-append">
+                            <button id="private_message_button" class="btn btn-primary" placeholder="message">입력</button>
+                        </div>
+                    </div>
+                    <br/>
+                    <p>DB관리</p>
+                    <button id="chat_log_destroy_button" class="btn btn-primary" placeholder="message">채팅로그 삭제</button>
+                    <button id="activity_log_destroy_button" class="btn btn-primary" placeholder="message">행동로그 삭제</button>
+                    <button id="report_log_destroy_button" class="btn btn-primary" placeholder="message">신고로그 삭제</button>
+                </div>
+                <div class="card-footer" style="height: 30px">
+                    
+                </div>
+            </div>
+        </div>
+        <!-- 채팅로그 보기 -->
+        <div class="col-lg-7">
+            <div class="card">
+                <div class="card-header" style="height: 100px">
+                    채팅 로그
+                    <!--닉네임서치-->
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="log_name_search" placeholder="닉네임" autocomplete="off" />
+                        <div class="input-group-append">
+                            <button id="log_name_search_button" class="btn btn-primary" placeholder="message">검색</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body" style="height: 430px">
+                    <div id="chat_log_message_box" style="height: 380px; overflow-y: scroll;">
+                        <ul id="chat_log_messages"></ul>
+                    </div>
+                </div>
+                <div class="card-footer" style="height: 70px">
+                    <button id="chat_log_button" class="btn btn-primary" placeholder="message">로그 불러오기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <!--행동로그 보기-->
+        <div class="col-lg-6">
+           <div class="card">
+                <div class="card-header">
+                    행동 로그
+                </div>
+                <div class="card-body">
+                    <div id="activity_log_message_box" style="height: 350px; overflow-y: scroll;">
+                        <ul id="activity_log_messages"></ul>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button id="activity_log_button" class="btn btn-primary" placeholder="message">로그 불러오기</button>
+                </div>
+            </div>
+        </div>
+        <!--신고로그 보기-->
+        <div class="col-lg-6">
+            <div class="card">
+                 <div class="card-header">
+                     신고 로그
+                 </div>
+                 <div class="card-body">
+                     <div id="report_log_message_box" style="height: 350px; overflow-y: scroll;">
+                         <ul id="report_log_messages"></ul>
+                     </div>
+                 </div>
+                 <div class="card-footer">
+                     <button id="report_log_button" class="btn btn-primary" placeholder="message">로그 불러오기</button>
+                 </div>
+             </div>
+         </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
+    <script>
+        $(() => {
+        /** Socket Starts **/
+            const socket = io();
+
+            //플레이어 벤
+            $('#ban_button').click(() => {                
+                socket.emit('request_user_ban', {ban_name: $('#ban_name').val(), ban_reason:$('#ban_reason').val()});
+                $('#ban_name').val('');
+                $('#ban_reason').val('');
+                return false;
+            });
+            $('#pardon_button').click(() => {
+                socket.emit('request_user_pardon', {ban_name: $('#pardon_name').val()});
+                $('#pardon_name').val('');
+                return false;
+            });
+            //전체공지
+            $('#every_notice_button').click(() => {
+                socket.emit('request_important_message', $('#every_notice').val());
+                $('#every_notice').val('');
+                return false;
+            });
+            //귓속말
+            $('#private_message_button').click(() => {                
+                socket.emit('request_private_message', {private_message_target: $('#private_message_target').val(), private_message_contain:$('#private_message_contain').val()});
+                $('#private_message_target').val('');
+                $('#private_message_contain').val('');
+                return false;
+            });
+            //로그불러오기
+            //채팅로그
+            $('#chat_log_button').click(() => {
+                socket.emit('request_chat_log',);
+                return false;
+            });
+            socket.on('response_chat_log_message', (res) => {
+                $('#chat_log_messages').append($('<li>'+res+'</li>'));
+                $("#chat_log_message_box").scrollTop($("#chat_log_message_box")[0].scrollHeight);
+            });
+            socket.on('response_chat_log_message_box_clear', (res) => {
+                $('#chat_log_messages').empty();
+            });
+            {
+                //닉네임서치
+                $('#log_name_search_button').click(() => {
+                socket.emit('request_name_search',{search_name: $('#log_name_search').val()});
+                return false;
+                });
+            }
+            //행동로그
+            $('#activity_log_button').click(() => {
+                socket.emit('request_activity_log',);
+                return false;
+            });
+            socket.on('response_activity_log_message', (res) => {
+                $('#activity_log_messages').append($('<li>'+res+'</li>'));
+                $("#activity_log_message_box").scrollTop($("#activity_log_message_box")[0].scrollHeight);
+            });
+            socket.on('response_activity_log_message_box_clear', (res) => {
+                $('#activity_log_messages').empty();
+            });
+            //신고로그
+            $('#report_log_button').click(() => {
+                socket.emit('request_report_log',);
+                return false;
+            });
+            socket.on('response_report_log_message', (res) => {
+                $('#report_log_messages').append($('<li>'+res+'</li>'));
+                $("#report_log_message_box").scrollTop($("#report_log_message_box")[0].scrollHeight);
+            });
+            socket.on('response_report_log_message_box_clear', (res) => {
+                $('#report_log_messages').empty();
+            });
+            
+            //로그삭제
+            $('#chat_log_destroy_button').click(() => {
+                socket.emit('request_chat_log_destroy',);
+                $('#chat_log_messages').empty();
+                return false;
+            });
+            $('#activity_log_destroy_button').click(() => {
+                socket.emit('request_activity_log_destroy',);
+                $('#activity_log_messages').empty();
+                return false;
+            });
+            $('#report_log_destroy_button').click(() => {
+                socket.emit('request_report_log_destroy',);
+                $('#report_log_messages').empty();
+                return false;
+            });
+            //경고
+            socket.on('response_alert_message', (res) => {
+                alert(res);
+            });
+            
+        });
+    </script>    
+</body>
+</html>
